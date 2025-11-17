@@ -25,6 +25,13 @@ const packingRecordSchema = new mongoose.Schema({
   bagWeight: { type: Number, default: 0 },
   wastage: { type: Number, default: 0 },
   workers: [{ type: String }],
+  noOfPackets: { type: Number, default: 0 },
+  packetsInEachBag: { type: Number, default: 0 },
+
+  vendorName: {type:String},
+brandName: {type:String},
+itemName: {type:String},
+
   managerId: { type: String },
   status: {
     type: String,

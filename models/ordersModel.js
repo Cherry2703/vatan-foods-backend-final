@@ -39,7 +39,10 @@ const orderSchema = new mongoose.Schema(
     driverContact: { type: String },
     warehouseLocation: { type: String },
     orderedDate:{ type: String }, // ✅ added
-    remarks: { type: String }
+    remarks: { type: String },
+    vendorGSTIN: { type: String }, // ✅ added
+    vendorName: { type: String }, // ✅ added
+    vendorAddress: { type: String }, // ✅ added
   },
   { timestamps: true }
 );

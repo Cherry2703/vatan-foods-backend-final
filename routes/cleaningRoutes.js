@@ -9,35 +9,94 @@ const router = express.Router();
 /**
  * ✅ Create Cleaning Record
  */
+// router.post("/", protect, async (req, res) => {
+//   try {
+//     const { batchId, inputQuantity, outputQuantity } = req.body;
+
+//     // 🧩 Validate that batchId exists in incoming materials
+//     const incomingBatch = await IncomingMaterial.findOne({ batchId });
+//     if (!incomingBatch) {
+//       return res.status(404).json({ message: "Invalid batchId: Incoming record not found" });
+//     }
+
+//     // 🟩 Find the last cleaning record for this batch to calculate next cycle
+//     const lastCycle = await CleaningRecord.findOne({ batchId }).sort({ cycleNumber: -1 }).exec();
+
+//     const nextCycleNumber =
+//       lastCycle && !isNaN(lastCycle.cycleNumber) ? lastCycle.cycleNumber + 1 : 1;
+
+//     // 🧮 Auto-calculate wastage
+//     const wastageQuantity = inputQuantity - outputQuantity;
+
+//     const newRecord = new CleaningRecord({
+//       ...req.body,
+//       cleaningId: uuidv4(),
+//       cycleNumber: nextCycleNumber,
+//       previousOutput: lastCycle ? lastCycle.outputQuantity : inputQuantity,
+//       wastageQuantity,
+//       createdBy: req.user._id,
+//     });
+
+//     const saved = await newRecord.save();
+//     res.status(201).json(saved);
+//   } catch (err) {
+//     res.status(500).json({
+//       message: "Error creating cleaning record",
+//       error: err.message,
+//     });
+//   }
+// });
+
+
+
+
 router.post("/", protect, async (req, res) => {
   try {
     const { batchId, inputQuantity, outputQuantity } = req.body;
 
-    // 🧩 Validate that batchId exists in incoming materials
-    const incomingBatch = await IncomingMaterial.findOne({ batchId });
-    if (!incomingBatch) {
-      return res.status(404).json({ message: "Invalid batchId: Incoming record not found" });
+    // 🧩 Check incoming material
+    const incoming = await IncomingMaterial.findOne({ batchId });
+    if (!incoming) {
+      return res.status(404).json({ message: "Invalid batchId" });
     }
 
-    // 🟩 Find the last cleaning record for this batch to calculate next cycle
-    const lastCycle = await CleaningRecord.findOne({ batchId }).sort({ cycleNumber: -1 }).exec();
+    // 🟩 Validate input ≤ available stock
+    if (inputQuantity > incoming.totalQuantity) {
+      return res.status(400).json({
+        message: `Input exceeds available stock. Available: ${incoming.totalQuantity} ${incoming.unit}`,
+      });
+    }
 
-    const nextCycleNumber =
-      lastCycle && !isNaN(lastCycle.cycleNumber) ? lastCycle.cycleNumber + 1 : 1;
+    // 🟦 Remaining Stock
+    const remainingAfterCleaning = incoming.totalQuantity - inputQuantity;
 
-    // 🧮 Auto-calculate wastage
-    const wastageQuantity = inputQuantity - outputQuantity;
+    // 🟩 Previous cycle
+    const lastCycle = await CleaningRecord.findOne({ batchId })
+      .sort({ cycleNumber: -1 });
 
+    const nextCycle = lastCycle ? lastCycle.cycleNumber + 1 : 1;
+
+    // 🧮 Auto wastage
+    const wastage = inputQuantity - outputQuantity;
+
+    // 🟩 Create Cleaning Record
     const newRecord = new CleaningRecord({
       ...req.body,
       cleaningId: uuidv4(),
-      cycleNumber: nextCycleNumber,
+      cycleNumber: nextCycle,
       previousOutput: lastCycle ? lastCycle.outputQuantity : inputQuantity,
-      wastageQuantity,
+      wastageQuantity: wastage,
+      usedQuantity: inputQuantity,
+      remainingAfterCleaning,
       createdBy: req.user._id,
     });
 
     const saved = await newRecord.save();
+
+    // 🟥 UPDATE IncomingMaterial Stock
+    incoming.totalQuantity = remainingAfterCleaning;
+    await incoming.save();
+
     res.status(201).json(saved);
   } catch (err) {
     res.status(500).json({
@@ -46,6 +105,7 @@ router.post("/", protect, async (req, res) => {
     });
   }
 });
+
 
 /**
  * ✅ Get All Cleaning Records (optionally filter by batchId)

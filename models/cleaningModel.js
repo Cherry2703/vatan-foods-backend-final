@@ -73,6 +73,15 @@ const cleaningSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    usedQuantity: {
+      type: Number,
+      required: true,
+    },
+
+    remainingAfterCleaning: {
+      type: Number,
+      required: true,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

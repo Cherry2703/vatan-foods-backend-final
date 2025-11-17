@@ -26,6 +26,11 @@ router.post("/", protect, async (req, res) => {
       status,
       pendingReason,
       remarks,
+      vendorName,
+      brandName,
+      itemName,
+      noOfPackets,
+      packetsInEachBag,
     } = req.body;
 
     // 🧩 Check cleaningId validity only if provided
@@ -64,7 +69,20 @@ router.post("/", protect, async (req, res) => {
       status,
       pendingReason: validatedPendingReason,
       remarks,
+      vendorName,
+      brandName,
+      itemName,
+      noOfPackets,
+      packetsInEachBag
     });
+
+    console.log(
+      vendorName,
+      brandName,
+      itemName,
+      noOfPackets,
+      packetsInEachBag,);
+    
 
     const saved = await newRecord.save();
     res.status(201).json({ message: "✅ Packing record created successfully.", record: saved });
