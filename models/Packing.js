@@ -31,7 +31,7 @@ const packingRecordSchema = new mongoose.Schema({
   vendorName: {type:String},
 brandName: {type:String},
 itemName: {type:String},
-
+  createdBy:{type:String, ref:"User",required:true},
   managerId: { type: String },
   status: {
     type: String,

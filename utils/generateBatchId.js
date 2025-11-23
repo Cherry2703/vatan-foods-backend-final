@@ -1,4 +1,4 @@
-import IncomingMaterial from "../models/incomingModel.js";
+import IncomingMaterial from "../models/Incoming.js";
 
 export const generateBatchId = async () => {
   const date = new Date();

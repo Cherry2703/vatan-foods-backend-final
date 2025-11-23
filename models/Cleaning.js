@@ -83,7 +83,7 @@ const cleaningSchema = new mongoose.Schema(
       required: true,
     },
     createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: true,
     },
@@ -92,3 +92,8 @@ const cleaningSchema = new mongoose.Schema(
 );
 
 export default mongoose.model("CleaningRecord", cleaningSchema);
+
+
+
+
+

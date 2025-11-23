@@ -1,57 +1,34 @@
-// routes/trackOrder.js
 import express from "express";
-import Incoming from "../models/incomingModel.js";
-import Cleaning from "../models/cleaningModel.js";
-import Packing from "../models/packingModel.js";
-import Dispatch from "../models/dispatchModel.js";
-import Orders from "../models/ordersModel.js";
+import History from "../models/History.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-/**
- * GET /api/batch/track/:batchId
- * Combines FULL history for a batch
- */
-router.get("/:batchId", async (req, res) => {
+router.get("/", protect,async (req, res) => {
   try {
-    const { batchId } = req.params;
+    const records = await History.find({}).sort({ createdAt: -1 });
 
-    // Find incoming stage (raw material)
-    const incoming = await Incoming.findOne({ batchId });
-
-    // Find cleaning stage
-    const cleaning = await Cleaning.findOne({ batchId });
-
-    // Find packing stage(s) — often more than one
-    const packing = await Packing.find({ batchId });
-
-    // Find dispatch info
-    const dispatch = await Dispatch.findOne({ batchId });
-
-    // Find ANY order that contains this batch
-    const order = await Orders.findOne({ "items.batchId": batchId });
-
-    // If nothing found at all
-    if (!incoming && !cleaning && packing.length === 0 && !dispatch) {
-      return res.status(404).json({
-        message: "No tracking data found for this Batch ID",
-      });
+    if (!records || records.length === 0) {
+      return res.status(404).json({ message: "No history found" });
     }
 
-    // Response object
-    const trackingData = {
-      batchId,
-      incoming: incoming || null,
-      cleaning: cleaning || null,
-      packing: packing.length ? packing : null,
-      dispatch: dispatch || null,
-      linkedOrder: order || null,
-    };
+    const incoming = records.filter(rec => rec.model === "Incoming");
+    const cleaning = records.filter(rec => rec.model === "Cleaning");
+    const packing = records.filter(rec => rec.model === "Packing");
+    const orders = records.filter(rec => rec.model === "Order");
 
-    res.status(200).json(trackingData);
+    res.status(200).json({
+      message: "History fetched successfully",
+      total: records.length,
+      incoming,
+      cleaning,
+      packing,
+      orders,
+    });
+
   } catch (err) {
-    console.error("❌ Error tracking batch:", err);
-    res.status(500).json({ error: "Server error" });
+    console.error("❌ Error fetching history:", err);
+    res.status(500).json({ error: "Server error", details: err });
   }
 });
 

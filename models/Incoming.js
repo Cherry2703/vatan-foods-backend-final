@@ -21,12 +21,12 @@ const incomingSchema = new mongoose.Schema(
     totalBags: { type: Number },
     weightPerBag: { type: Number },
     unit: { type: String, enum: ["kg", "gms", "litre", "pcs"], default: "kg" },
-    totalQuantity: { type: Number },
+    totalQuantity: { type: Number,required:true },
     vehicleNo: { type: String },
     driverName: { type: String },
     remarks: { type: String },
     createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: true,
     },
@@ -35,3 +35,8 @@ const incomingSchema = new mongoose.Schema(
 );
 
 export default mongoose.model("IncomingMaterial", incomingSchema);
+
+
+
+
+

@@ -1,69 +1,68 @@
 import express from "express";
-import IncomingMaterial from "../models/incomingModel.js";
+import Incoming from "../models/Incoming.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { generateBatchId } from "../utils/generateBatchId.js";
+import History from "../models/History.js";
 
-const router = express.Router();
+const app = express.Router();
 
-// ✅ Create Incoming Material
-router.post("/", protect, async (req, res) => {
+
+//--------------------------------------------------
+async function saveHistory(batchId, model, action, data, updatedBy) {
+  await History.create({ batchId, model, action, data, updatedBy });
+}
+
+
+//--------------------------------------------------
+// CRUD ROUTES
+//--------------------------------------------------
+
+// Incoming ------------------------------------------------------------
+app.post("/", protect, async (req, res) => {
   try {
-    const batchId = await generateBatchId();
-    const newIncoming = new IncomingMaterial({
-      ...req.body,
-      batchId,
-      createdBy: req.user._id,
-    });
-    const saved = await newIncoming.save();
-    res.status(201).json(saved);
-  } catch (err) {
-    res.status(500).json({ message: "Error creating incoming record", error: err.message });
-  }
-});
-
-// ✅ Get All Incoming Materials
-router.get("/", protect, async (req, res) => {
-  try {
-    const incoming = await IncomingMaterial.find().populate("createdBy", "name email");
+    const incoming = await Incoming.create(req.body);
+    await saveHistory(incoming.batchId, "Incoming", "CREATE", incoming, req.user.name);
     res.json(incoming);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching records", error: err.message });
+    res.status(500).json(err);
   }
 });
 
-// ✅ Get Single Incoming Material
-router.get("/:id", protect, async (req, res) => {
-  try {
-    const record = await IncomingMaterial.findById(req.params.id);
-    if (!record) return res.status(404).json({ message: "Record not found" });
-    res.json(record);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching record", error: err.message });
-  }
+app.get("/", protect, async (req, res) => {
+  const data = await Incoming.find({});
+  res.json(data);
 });
 
-// ✅ Update Incoming Material
-router.put("/:id", protect, async (req, res) => {
-  try {
-    const updated = await IncomingMaterial.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    if (!updated) return res.status(404).json({ message: "Record not found" });
+app.get("/:batchId",protect, async (req, res) => {
+  const data = await Incoming.findOne({ batchId: req.params.batchId });
+  res.json(data);
+});
+
+app.put("/:batchId", protect, async (req, res) => {
+  try {    
+    const previous = await Incoming.findOne({ batchId: req.params.batchId });
+    const updated = await Incoming.findOneAndUpdate(
+      { batchId: req.params.batchId },
+      req.body,
+      { new: true }
+    );
+
+    await saveHistory(updated.batchId, "Incoming", "UPDATE", { previous, updated }, req.user.name);
     res.json(updated);
   } catch (err) {
-    res.status(500).json({ message: "Error updating record", error: err.message });
+    res.status(500).json(err);
   }
 });
 
-// ✅ Delete Incoming Material
-router.delete("/:id", protect, async (req, res) => {
+app.delete("/:batchId", protect, async (req, res) => {
   try {
-    const deleted = await IncomingMaterial.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "Record not found" });
-    res.json({ message: "Record deleted successfully" });
+    const deleted = await Incoming.findOneAndDelete({ batchId: req.params.batchId });
+    await saveHistory(req.params.batchId, "Incoming", "DELETE", deleted, req.user.name);
+    res.json({ message: "Deleted" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting record", error: err.message });
+    res.status(500).json(err);
   }
 });
 
-export default router;
+
+export default app;
