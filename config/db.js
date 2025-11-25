@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-console.log("mongo uri", process.env.MONGO_URI);
-
-const MONGO_URI = "mongodb+srv://ramcharanamr2408_db_user:kZ3UaaVlEZzoBUH8@cluster0.kcqwxxv.mongodb.net/vatanFoodsDB"
+// Load env variables
+dotenv.config();
 
 const connectDB = async () => {
+  console.log("MONGO_URI:", process.env.MONGO_URI); // should print the URI now
+
   try {
-    await mongoose.connect(MONGO_URI, {
+    await mongoose.connect(process.env.MONGO_URI, {
       autoIndex: true,
     });
 
