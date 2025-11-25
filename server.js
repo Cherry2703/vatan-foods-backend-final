@@ -17,11 +17,12 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "*",
+    origin: [process.env.CLIENT_URL, "http://localhost:3000"],
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
 );
+
 
 // START SERVER ONLY AFTER DB CONNECTS
 const startServer = async () => {
