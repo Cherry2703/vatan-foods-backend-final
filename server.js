@@ -9,12 +9,11 @@ import incomingRoutes from "./routes/incomingRoutes.js";
 import cleaningRoutes from "./routes/cleaningRoutes.js";
 import packingRoutes from "./routes/packingRoutes.js";
 import trackOrderRoutes from "./routes/trackOrder.js";
- 
-
 
 dotenv.config();
+
 const app = express();
- 
+
 app.use(express.json());
 app.use(
   cors({
@@ -24,21 +23,27 @@ app.use(
   })
 );
 
-// DB Connection
-connectDB();
+// START SERVER ONLY AFTER DB CONNECTS
+const startServer = async () => {
+  await connectDB();  // <--- ❗ MUST BE AWAITED
+  console.log("DB Connection complete → Loading routes...");
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/incoming", incomingRoutes);
-app.use("/api/cleaning", cleaningRoutes);
-app.use("/api/packing", packingRoutes);
-app.use("/api/track-orders",trackOrderRoutes)
+  // Register routes AFTER DB is ready
+  app.use("/api/auth", authRoutes);
+  app.use("/api/orders", orderRoutes);
+  app.use("/api/incoming", incomingRoutes);
+  app.use("/api/cleaning", cleaningRoutes);
+  app.use("/api/packing", packingRoutes);
+  app.use("/api/track-orders", trackOrderRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Vatan Foods Backend is running...");
-});
+  app.get("/", (req, res) => {
+    res.send("Vatan Foods Backend is running...");
+  });
 
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-export default app; 
+  const PORT = process.env.PORT || 5001;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+};
+
+startServer();  // <--- RUN IT
+
+export default app;
