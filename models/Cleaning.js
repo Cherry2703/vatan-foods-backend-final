@@ -48,6 +48,10 @@ const cleaningSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    coverWastage: {
+      type: Number,
+      required: true,
+    },
     unit: {
       type: String,
       enum: ["kg", "g", "litre", "pcs"],
