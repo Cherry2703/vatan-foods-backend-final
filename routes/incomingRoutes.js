@@ -38,21 +38,55 @@ app.get("/:batchId",protect, async (req, res) => {
   res.json(data);
 });
 
+// app.put("/:incomingId", protect, async (req, res) => {
+//   try {    
+//     const previous = await Incoming.findOne({ incomingId: req.params.incomingId });
+//     const updated = await Incoming.findOneAndUpdate(
+//       { batchId: req.params.incomingId },
+//       req.body,
+//       { new: true }
+//     );
+
+//     await saveHistory(updated.batchId, "Incoming", "UPDATE", { previous, updated }, req.user.name);
+//     res.json(updated);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
+
+
+
 app.put("/:incomingId", protect, async (req, res) => {
-  try {    
+  try {
     const previous = await Incoming.findOne({ incomingId: req.params.incomingId });
+
+    if (!previous) {
+      return res.status(404).json({ message: "Incoming material not found" });
+    }
+
+    // Update using incomingId
     const updated = await Incoming.findOneAndUpdate(
-      { batchId: req.params.incomingId },
+      { incomingId: req.params.incomingId },
       req.body,
       { new: true }
     );
 
-    await saveHistory(updated.batchId, "Incoming", "UPDATE", { previous, updated }, req.user.name);
+    await saveHistory(
+      updated.batchId,
+      "Incoming",
+      "UPDATE",
+      { previous, updated },
+      req.user.name
+    );
+
     res.json(updated);
   } catch (err) {
-    res.status(500).json(err);
+    console.error("PUT /incoming/:incomingId error:", err);
+    res.status(500).json({ message: "Internal server error", error: err.message });
   }
 });
+
 
 app.delete("/:batchId", protect, async (req, res) => {
   try {
