@@ -9,6 +9,7 @@ import incomingRoutes from "./routes/incomingRoutes.js";
 import cleaningRoutes from "./routes/cleaningRoutes.js";
 import packingRoutes from "./routes/packingRoutes.js";
 import trackOrderRoutes from "./routes/trackOrder.js";
+import companyRoutes from "./routes/companyRoutes.js";
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ const startServer = async () => {
   app.use("/api/cleaning", cleaningRoutes);
   app.use("/api/packing", packingRoutes);
   app.use("/api/track-orders", trackOrderRoutes);
+  app.use("/api/companies", companyRoutes);
 
   app.get("/", (req, res) => {
     res.send("Vatan Foods Backend is running...");
