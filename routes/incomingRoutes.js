@@ -88,13 +88,22 @@ app.put("/:incomingId", protect, async (req, res) => {
 });
 
 
-app.delete("/:batchId", protect, async (req, res) => {
+app.delete("/:incomingId", protect, async (req, res) => {
   try {
-    const deleted = await Incoming.findOneAndDelete({ batchId: req.params.batchId });
-    await saveHistory(req.params.batchId, "Incoming", "DELETE", deleted, req.user.name);
-    res.json({ message: "Deleted" });
+    // Find and delete by incomingId
+    const deleted = await Incoming.findOneAndDelete({ incomingId: req.params.incomingId });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Incoming material not found" });
+    }
+
+    // Save history
+    await saveHistory(deleted.batchId, "Incoming", "DELETE", deleted, req.user.name);
+
+    res.json({ message: "Deleted successfully" });
   } catch (err) {
-    res.status(500).json(err);
+    console.error("DELETE /incoming/:incomingId error:", err);
+    res.status(500).json({ message: "Internal server error", error: err.message });
   }
 });
 
