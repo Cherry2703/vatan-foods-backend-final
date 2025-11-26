@@ -38,11 +38,11 @@ app.get("/:batchId",protect, async (req, res) => {
   res.json(data);
 });
 
-app.put("/:batchId", protect, async (req, res) => {
+app.put("/:incomingId", protect, async (req, res) => {
   try {    
-    const previous = await Incoming.findOne({ batchId: req.params.batchId });
+    const previous = await Incoming.findOne({ incomingId: req.params.incomingId });
     const updated = await Incoming.findOneAndUpdate(
-      { batchId: req.params.batchId },
+      { batchId: req.params.incomingId },
       req.body,
       { new: true }
     );
