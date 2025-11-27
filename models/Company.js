@@ -14,9 +14,6 @@ const CompanySchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    website: {
-      type: String,
-    },
     email: {
       type: String,
       required: true,
@@ -38,10 +35,6 @@ const CompanySchema = new mongoose.Schema(
       bankName: { type: String },
       accountNumber: { type: String },
       ifscCode: { type: String },
-    },
-    employees: {
-      type: Number,
-      default: 0,
     },
     branches: [
       {
