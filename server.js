@@ -18,7 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL, "http://localhost:3000"],
+    origin: [process.env.CLIENT_URL, "http://localhost:3000","https://vatan-foods.vercel.app"],
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
