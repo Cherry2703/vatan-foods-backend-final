@@ -8,48 +8,52 @@ const CompanySchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
+      default: "VatanFoods",
     },
     registrationNumber: {
       type: String,
       required: true,
       unique: true,
+      default: "VATANFOODS-REG-001",
     },
     email: {
       type: String,
       required: true,
+      default: "vatanfoods1200@gmail.com",
     },
     phoneNumbers: {
-      type: [String], // can store multiple numbers
-      default: [],
+      type: [String],
+      default: ["+91-9876543210"],
     },
     address: {
-      street: { type: String },
-      city: { type: String },
-      state: { type: String },
-      country: { type: String },
-      zipCode: { type: String },
+      street: { type: String, default: "Hyderabad Road" },
+      city: { type: String, default: "Hyderabad" },
+      state: { type: String, default: "Telangana" },
+      country: { type: String, default: "India" },
+      zipCode: { type: String, default: "500001" },
     },
     financials: {
-      gstNumber: { type: String },
-      panNumber: { type: String },
-      bankName: { type: String },
-      accountNumber: { type: String },
-      ifscCode: { type: String },
+      gstNumber: { type: String, default: "GSTXXXXX1234" },
+      panNumber: { type: String, default: "ABCDE1234F" },
+      bankName: { type: String, default: "HDFC Bank" },
+      accountNumber: { type: String, default: "1234567890" },
+      ifscCode: { type: String, default: "HDFC0001234" },
     },
     branches: [
       {
-        name: String,
+        name: { type: String, default: "Main Branch" },
         address: {
-          street: String,
-          city: String,
-          state: String,
-          country: String,
-          zipCode: String,
+          street: { type: String, default: "Hyderabad Road" },
+          city: { type: String, default: "Hyderabad" },
+          state: { type: String, default: "Telangana" },
+          country: { type: String, default: "India" },
+          zipCode: { type: String, default: "500001" },
         },
       },
     ],
     industry: {
       type: String,
+      default: "Food Processing",
     },
     status: {
       type: String,
@@ -57,10 +61,12 @@ const CompanySchema = new mongoose.Schema(
       default: "Active",
     },
     createdBy: {
-      type: String, // store user ID who created the company
+      type: String,
+      default: "System",
     },
     updatedBy: {
-      type: String, // store user ID who last updated
+      type: String,
+      default: "System",
     },
   },
   { timestamps: true }
