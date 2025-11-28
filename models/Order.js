@@ -10,10 +10,10 @@ const orderSchema = new mongoose.Schema(
   unique: true,
   default: () => uuidv4()},
     customerName: { type: String, required: true },
-    customerType: { type: String, enum: ["Retail", "Wholesale"], required: true },
+    customerType: { type: String, required: true },
     contactPerson: { type: String, required: true },
     contactNumber: { type: String, required: true },
-    email: { type: String, required: true },
+    email: { type: String },
     poNumber: { type: String }, // ✅ added
     items: [
       {
@@ -33,7 +33,7 @@ const orderSchema = new mongoose.Schema(
     deliveryAddress: { type: String, required: true },
     deliveryCity: { type: String, required: true },
     deliveryState: { type: String, required: true },
-    deliveryPincode: { type: String, required: true },
+    deliveryPincode: { type: String },
     deliveryDate: { type: String, required: true },
     deliveryTimeSlot: { type: String, required: true }, // ✅ removed enum
     assignedVehicle: { type: String },
