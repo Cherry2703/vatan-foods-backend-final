@@ -57,9 +57,9 @@ app.get("/:batchId",protect, async (req, res) => {
 
 
 
-app.put("/:incomingId", protect, async (req, res) => {
+app.put("/:batchId", protect, async (req, res) => {
   try {
-    const previous = await Incoming.findOne({ incomingId: req.params.incomingId });
+    const previous = await Incoming.findOne({ batchId: req.params.batchId });
 
     if (!previous) {
       return res.status(404).json({ message: "Incoming material not found" });
@@ -67,7 +67,7 @@ app.put("/:incomingId", protect, async (req, res) => {
 
     // Update using incomingId
     const updated = await Incoming.findOneAndUpdate(
-      { incomingId: req.params.incomingId },
+      { batchId: req.params.batchId },
       req.body,
       { new: true }
     );
