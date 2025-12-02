@@ -15,10 +15,11 @@ const packingRecordSchema = new mongoose.Schema({
   shift: { type: String },
   packingType: {
     type: String,
-    enum: ["Initial Packaging", "Final Packaging","Loose Packing"],
-    default: "Final Packaging",
+    enum: ["Manual Packaging", "Machine Packaging","Loose Packing"],
+    default: "Manual Packaging",
   },
   inputFromRaw: { type: Number, default: 0 },
+  invoiceNumber: { type: String },
   inputFromCleaning: { type: Number, default: 0 },
   outputPacked: { type: Number, default: 0 },
   numberOfBags: { type: Number, default: 0 },
