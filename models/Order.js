@@ -46,7 +46,6 @@ const orderSchema = new mongoose.Schema(
     vendorName: { type: String }, // ✅ added
     vendorAddress: { type: String }, // ✅ added
     createdBy: {type:String,ref:"User",required:true}
-
   },
   { timestamps: true }
 );

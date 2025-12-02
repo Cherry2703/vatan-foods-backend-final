@@ -43,7 +43,7 @@ app.post("/", protect, async (req, res) => {
       poNumber,
       vendorName,
       vendorAddress,
-      vendorGSTIN
+      vendorGSTIN,
     } = req.body;
 
     // Parse items if stringified JSON
@@ -113,6 +113,7 @@ app.post("/", protect, async (req, res) => {
 
       createdBy: req.user?._id || req.user?.id || null,
       updatedBy: req.user?._id || req.user?.id || null,
+      orderStatus: orderStatus || "Pending"
     });
 
     // Save to audit history

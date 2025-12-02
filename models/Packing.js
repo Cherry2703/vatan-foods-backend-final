@@ -15,7 +15,7 @@ const packingRecordSchema = new mongoose.Schema({
   shift: { type: String },
   packingType: {
     type: String,
-    enum: ["Initial Packaging", "Final Packaging"],
+    enum: ["Initial Packaging", "Final Packaging","Loose Packing"],
     default: "Final Packaging",
   },
   inputFromRaw: { type: Number, default: 0 },
