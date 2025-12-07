@@ -81,7 +81,10 @@ const cleaningSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-
+    cleanedOn: {
+      type: Date,
+      default: Date.now,
+    },
     remainingAfterCleaning: {
       type: Number,
       required: true,
