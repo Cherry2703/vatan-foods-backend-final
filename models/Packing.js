@@ -15,8 +15,8 @@ const packingRecordSchema = new mongoose.Schema({
   shift: { type: String },
   packingType: {
     type: String,
-    enum: ["Manual Packaging", "Machine Packaging","Loose Packing"],
-    default: "Manual Packaging",
+    enum: ["Manual Packing", "Machine Packing","Loose Packing"],
+    default: "Manual Packing",
   },
   inputFromRaw: { type: Number, default: 0 },
   invoiceNumber: { type: String },
