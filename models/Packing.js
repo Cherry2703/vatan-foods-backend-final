@@ -1,4 +1,3 @@
-// models/PackingRecord.js
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
@@ -44,7 +43,6 @@ itemName: {type:String},
     enum: ["Stock shortage", "Machine issue", "Labor shortage", "Other", null],
   },
   remarks: { type: String },
-  // ✅ New field: history of changes
   history: [packingHistorySchema],
 }, { timestamps: true });
 

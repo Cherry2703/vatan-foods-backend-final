@@ -25,12 +25,10 @@ app.use(
 );
 
 
-// START SERVER ONLY AFTER DB CONNECTS
 const startServer = async () => {
   await connectDB();  // <--- ❗ MUST BE AWAITED
   console.log("DB Connection complete → Loading routes...");
 
-  // Register routes AFTER DB is ready
   app.use("/api/auth", authRoutes);
   app.use("/api/orders", orderRoutes);
   app.use("/api/incoming", incomingRoutes);
