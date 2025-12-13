@@ -63,10 +63,10 @@ router.post("/login", async (req, res) => {
 router.get("/employees", protect, async (req, res) => {
   try {
     // Fetch all users except those with role "Admin"
-    const employees = await User.find(
-      { role: { $ne: "Admin" } }, // $ne means "not equal"
-      "-password" // exclude password field for safety
-    ).sort({ createdAt: -1 }); // newest first (optional)
+    const employees = await User.find({});
+    //   { role: { $ne: "Admin" } }, 
+    //   "-password" 
+    // ).sort({ createdAt: -1 }); 
 
     // Return employees list
     res.status(200).json({
