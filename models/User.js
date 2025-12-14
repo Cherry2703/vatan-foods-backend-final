@@ -14,6 +14,20 @@ const userSchema = new mongoose.Schema(
       enum: ["Admin", "Manager", "Operator"],
       default: "Operator",
     },
+    mobile: { type: String  },
+    department: { type: String  },
+    designation: { type: String  },
+    address: { type: String  },
+    state: { type: String  },
+    country: { type: String  },
+    profilePic: { type: String  },
+    DOB: { type: Date  },
+    gender: { type: String  },
+    emergencyContact: { type: String  },
+    joinedDate: { type: Date  },
+    employmentType: { type: String  },
+    shiftTiming: { type: String  },
+
   },
   { timestamps: true }
 );

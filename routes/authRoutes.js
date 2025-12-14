@@ -11,16 +11,95 @@ const generateToken = (id) => {
 };
 
 
+// router.post("/register", async (req, res) => {
+//   const { name, email, password, role } = req.body;
+
+//   try {
+//     const userExists = await User.findOne({ email });
+//     if (userExists)
+//       return res.status(400).json({ message: "User already exists" });
+
+//     const user = await User.create({ name, email, password, role });
+
+//     res.status(201).json({
+//       uuid: user.uuid,
+//       name: user.name,
+//       email: user.email,
+//       role: user.role,
+//       token: generateToken(user._id),
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// });
+
+
 router.post("/register", async (req, res) => {
-  const { name, email, password, role } = req.body;
-
   try {
+    const {
+      name,
+      email,
+      password,
+
+      // Optional profile fields
+      role,
+      mobile,
+      department,
+      designation,
+      address,
+      state,
+      country,
+      profilePic,
+      DOB,
+      gender,
+      emergencyContact,
+      joinedDate,
+      employmentType,
+      shiftTiming,
+    } = req.body;
+
+    // 🔒 Required field validation
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: "Name, email, and password are required",
+      });
+    }
+
+    // 🔒 Check if user already exists
     const userExists = await User.findOne({ email });
-    if (userExists)
-      return res.status(400).json({ message: "User already exists" });
+    if (userExists) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
+    }
 
-    const user = await User.create({ name, email, password, role });
+    // 🔒 Role protection (prevent random Admin creation)
+    const allowedRoles = ["Admin", "Manager", "Operator"];
+    const safeRole = allowedRoles.includes(role) ? role : "Operator";
 
+    // ✅ Create user
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role: safeRole,
+
+      mobile,
+      department,
+      designation,
+      address,
+      state,
+      country,
+      profilePic,
+      DOB,
+      gender,
+      emergencyContact,
+      joinedDate,
+      employmentType,
+      shiftTiming,
+    });
+
+    // ✅ Response (never send password)
     res.status(201).json({
       uuid: user.uuid,
       name: user.name,
@@ -28,8 +107,13 @@ router.post("/register", async (req, res) => {
       role: user.role,
       token: generateToken(user._id),
     });
+
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("Register Error:", error);
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
   }
 });
 
