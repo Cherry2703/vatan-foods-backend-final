@@ -179,40 +179,64 @@ app.post("/analytics", protect, async (req, res) => {
     // 6️⃣ BATCH-WISE PACKING
     // ==============================
     const packingBatchAgg = await Packing.aggregate([
-      {
-        $match: {
-          packedDate: { $gte: start, $lte: end },
-          status: "Completed"
+  {
+    $match: {
+      batchId: { $exists: true }
+    }
+  },
+  {
+    $group: {
+      _id: "$batchId",
+
+      // Status handling
+      status: { $last: "$status" },
+
+      saleVendorName: { $last: "$vendorName" },
+
+      // Count ALL records
+      totalRecords: { $sum: 1 },
+
+      // Only completed contribute to production
+      packedKg: {
+        $sum: {
+          $cond: [{ $eq: ["$status", "Completed"] }, "$outputPacked", 0]
         }
       },
-      {
-        $group: {
-          _id: "$batchId",
-          saleVendorName: { $first: "$vendorName" },
-          packedKg: { $sum: "$outputPacked" },
-          packets: { $sum: "$noOfPackets" },
-          wastageKg: { $sum: "$wastage" },
-          workersArrays: { $push: { $ifNull: ["$workers", []] } },
-          supervisor: { $first: "$managerId" }
+      packets: {
+        $sum: {
+          $cond: [{ $eq: ["$status", "Completed"] }, "$noOfPackets", 0]
         }
       },
-      {
-        $project: {
-          saleVendorName: 1,
-          packedKg: 1,
-          packets: 1,
-          wastageKg: 1,
-          supervisor: 1,
-          workers: {
-            $reduce: {
-              input: "$workersArrays",
-              initialValue: [],
-              in: { $setUnion: ["$$value", "$$this"] }
-            }
-          }
+      wastageKg: {
+        $sum: {
+          $cond: [{ $eq: ["$status", "Completed"] }, "$wastage", 0]
+        }
+      },
+
+      workersArrays: { $push: { $ifNull: ["$workers", []] } },
+      supervisor: { $last: "$managerId" }
+    }
+  },
+  {
+    $project: {
+      status: 1,
+      saleVendorName: 1,
+      totalRecords: 1,
+      packedKg: 1,
+      packets: 1,
+      wastageKg: 1,
+      supervisor: 1,
+      workers: {
+        $reduce: {
+          input: "$workersArrays",
+          initialValue: [],
+          in: { $setUnion: ["$$value", "$$this"] }
         }
       }
-    ]);
+    }
+  }
+]);
+
 
     // ==============================
     // 7️⃣ BATCH PERFORMANCE
