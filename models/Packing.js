@@ -12,6 +12,7 @@ const packingRecordSchema = new mongoose.Schema({
   batchId: { type: String, required: true },
   cleaningId: { type: String },
   shift: { type: String },
+  packedDate: { type: Date },
   packingType: {
     type: String,
     enum: ["Manual Packing", "Machine Packing","Loose Packing"],
