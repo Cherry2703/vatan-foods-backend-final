@@ -5,9 +5,9 @@ import { protect } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // GET HISTORY BY BATCHID
-router.get("/:batchId", protect, async (req, res) => {
+router.get("/", protect, async (req, res) => {
   try {
-    const { batchId } = req.params;
+    const { batchId } = req.query;
 
     if (!batchId) {
       return res.status(400).json({ message: "batchId is required" });
